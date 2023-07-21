@@ -3,8 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('./cdn')
     <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  var jq = jQuery.noConflict();
+  jq('#attendanceForm').ready(function() {
+    
+    jq('input[name="status"]').on('change', function() {
+      var status = jq('input[name="status"]:checked').val();
+      var studentId = jq(this).data('student-id');
+     
+      alert(studentId);
+      jq.ajax({
+        type: 'POST',
+        url: '/save_attendance/'+studentId, 
+        data: { status: status, studentId: studentId },
+        headers: {
+        'X-CSRF-TOKEN': jq('meta[name="csrf-token"]').attr('content')
+    },
+        success: function(response) {
+          console.log('Value stored successfully: ' + status);
+          alert(data.success);
+        },
+        error: function(xhr, status, error) {
+          console.log('Error storing value: ' + error);
+        }
+      });
+    });
+  });
+</script>
+
 </head>
 <body>
     <div class="container d-flex justify-content-center py-5">
@@ -42,31 +72,32 @@
             <td>
                 <img src="images/{{$item['image']}}" alt="" class="rounded-circle" width="50" height="50">
             </td>
-            <td > 
+            <td> 
+              <form id="attendanceForm">
               <div class="d-inline-flex p-2">
               <div class="form-check pr-2">
-            <input class="form-check-input flex-radio" type="radio" name="flexRadioDefault_{{ $item->id }}" value="P" onclick="disableOtherRadioButtons('{{ $item->id }}')">
+            <input class="form-check-input flex-radio"  type="radio" name="status" class="status" value="P" onclick="disableOtherRadioButtons('{{ $item->id }}')" data-student-id="{{ $item->id }}">
             <label class="form-check-label" for="flexRadioDefault1">
                 P
             </label>
         </div>
         <div class="form-check pr-2">
-            <input class="form-check-input flex-radio" type="radio" name="flexRadioDefault_{{ $item->id }}" value="A" onclick="disableOtherRadioButtons('{{ $item->id }}')">
+            <input class="form-check-input flex-radio"  type="radio"  name="status" class="status" value="A" onclick="disableOtherRadioButtons('{{ $item->id }}')" data-student-id="{{ $item->id }}">
             <label class="form-check-label" for="flexRadioDefault2">
                 A
             </label>
         </div>
         <div class="form-check pr-2">
-            <input class="form-check-input flex-radio" type="radio" name="flexRadioDefault_{{ $item->id }}" value="L" onclick="disableOtherRadioButtons('{{ $item->id }}')">
+            <input class="form-check-input flex-radio" type="radio"  name="status " class="status" value="L" onclick="disableOtherRadioButtons('{{ $item->id }}')" data-student-id="{{ $item->id }}">
             <label class="form-check-label" for="flexRadioDefault3">
                 L
             </label>
         </div>
-
-                </div></td>
+                </div>
+                </form>
+              </td>
             <td>
-            
-            <a  data-bs-toggle="modal" data-bs-target="#exampleModal1"><button class="btn btn-danger btn-sm"><i class="fa fa-trash" aria-hidden="true"></i> delete</button></a>
+          <a  data-bs-toggle="modal" data-bs-target="#exampleModal1"><button class="btn btn-danger btn-sm"><i class="fa fa-trash" aria-hidden="true"></i> delete</button></a>
 
             <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -131,9 +162,8 @@
     </div>
   </div>
   
-</div>
-
-            </td>
+</div>  
+</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -143,7 +173,6 @@
         <script>
     function disableOtherRadioButtons(selectedRowId) {
         const radioButtons = document.querySelectorAll(`tr[data-row-id="${selectedRowId}"] .flex-radio`);
-
         radioButtons.forEach(button => {
             if (button.value !== selectedRowId) {
                 button.disabled = true;

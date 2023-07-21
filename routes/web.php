@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\teacherController;
+use App\Http\Controllers\attendenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,3 +45,6 @@ Route::get('/delete/{id}', [StudentController::class,'destroy']);
 
 Route::post('teacher_data',[teacherController::class,'insert']);
 Route::post('login',[teacherController::class,'customLogin']);
+
+Route::post('/save_attendance/{id}',[attendenceController::class,'store']);
+

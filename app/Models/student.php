@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class student extends Model
 {
-   
+    public function phone(): HasOne
+    {
+        return $this->hasOne(attendence::class);
+    }
     use HasFactory;
 }

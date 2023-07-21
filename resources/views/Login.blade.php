@@ -43,6 +43,12 @@
       <div class="form-group d-flex justify-content-end">
         <button type="submit" class="btn btn-primary btn-block ">Log in</button>
       </div>
+      <br>
+      @if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
       <div class="form-group">
         <p class="text-center">Dont have account? <a href="/teacher_signup">Sign Up</a></p>
       </div>
